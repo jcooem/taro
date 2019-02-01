@@ -1,12 +1,11 @@
 package taro.spreadsheet.model;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.junit.Test;
 
 import java.awt.*;
+import java.awt.Color;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -24,7 +23,7 @@ public class SpreadsheetCellTest extends AbstractTest {
         cell.setValue("A String");
 
         assertThat(cell.getPoiCell().getCellType())
-                .isEqualTo(Cell.CELL_TYPE_STRING);
+                .isEqualTo(CellType.STRING);
 
         assertThat(cell.getPoiCell().getStringCellValue())
                 .isEqualTo("A String");
@@ -37,7 +36,7 @@ public class SpreadsheetCellTest extends AbstractTest {
         cell.setValue("=B1*C1");    // formula is any string starting with an equals (=) sign
 
         assertThat(cell.getPoiCell().getCellType())
-                .isEqualTo(Cell.CELL_TYPE_FORMULA);
+                .isEqualTo(CellType.FORMULA);
 
         assertThat(cell.getPoiCell().getCellFormula())
                 .isEqualTo("B1*C1");
@@ -48,7 +47,7 @@ public class SpreadsheetCellTest extends AbstractTest {
         SpreadsheetCell cell = getCell();
         cell.setValue((short) 12);
         assertThat(cell.getPoiCell().getCellType())
-                .isEqualTo(Cell.CELL_TYPE_NUMERIC);
+                .isEqualTo(CellType.NUMERIC);
         
         assertThat(cell.getPoiCell().getNumericCellValue())
                 .isEqualTo(12.0);
@@ -59,7 +58,7 @@ public class SpreadsheetCellTest extends AbstractTest {
         SpreadsheetCell cell = getCell();
         cell.setValue(12);
         assertThat(cell.getPoiCell().getCellType())
-                .isEqualTo(Cell.CELL_TYPE_NUMERIC);
+                .isEqualTo(CellType.NUMERIC);
         assertThat(cell.getPoiCell().getNumericCellValue())
                 .isEqualTo(12.0);
     }
@@ -71,7 +70,7 @@ public class SpreadsheetCellTest extends AbstractTest {
         cell.setValue(12L);
         
         assertThat(cell.getPoiCell().getCellType())
-                .isEqualTo(Cell.CELL_TYPE_NUMERIC);
+                .isEqualTo(CellType.NUMERIC);
         assertThat(cell.getPoiCell().getNumericCellValue())
                 .isEqualTo(12.0);
     }
@@ -83,7 +82,7 @@ public class SpreadsheetCellTest extends AbstractTest {
         cell.setValue(12f);
         
         assertThat(cell.getPoiCell().getCellType())
-                .isEqualTo(Cell.CELL_TYPE_NUMERIC);
+                .isEqualTo(CellType.NUMERIC);
         assertThat(cell.getPoiCell().getNumericCellValue())
                 .isEqualTo(12.0);
     }
@@ -93,7 +92,7 @@ public class SpreadsheetCellTest extends AbstractTest {
         SpreadsheetCell cell = getCell();
         cell.setValue(12.0);
         assertThat(cell.getPoiCell().getCellType())
-                .isEqualTo(Cell.CELL_TYPE_NUMERIC);
+                .isEqualTo(CellType.NUMERIC);
         assertThat(cell.getPoiCell().getNumericCellValue())
                 .isEqualTo(12.0);
     }
@@ -106,7 +105,7 @@ public class SpreadsheetCellTest extends AbstractTest {
         SpreadsheetCell cell = getCell();
         cell.setValue(date);
         assertThat(cell.getPoiCell().getCellType())
-                .isEqualTo(Cell.CELL_TYPE_NUMERIC);
+                .isEqualTo(CellType.NUMERIC);
         assertThat(cell.getPoiCell().getNumericCellValue())
                 .isCloseTo(excelDateNumber, within(0.001));
     }
@@ -120,7 +119,7 @@ public class SpreadsheetCellTest extends AbstractTest {
         cell.setValue(calendar);
 
         assertThat(cell.getPoiCell().getCellType())
-                .isEqualTo(Cell.CELL_TYPE_NUMERIC);
+                .isEqualTo(CellType.NUMERIC);
 
         assertThat(cell.getPoiCell().getNumericCellValue())
                 .isCloseTo(excelDateNumber, within(0.001));
@@ -131,7 +130,7 @@ public class SpreadsheetCellTest extends AbstractTest {
         SpreadsheetCell cell = getCell();
         cell.setValue(true);
         assertThat(cell.getPoiCell().getCellType())
-                .isEqualTo(Cell.CELL_TYPE_BOOLEAN);
+                .isEqualTo(CellType.BOOLEAN);
 
         assertThat(cell.getPoiCell().getBooleanCellValue())
                 .isTrue();
@@ -145,7 +144,7 @@ public class SpreadsheetCellTest extends AbstractTest {
         cell.setValue(null);    // wipe out the string value
 
         assertThat(cell.getPoiCell().getCellType())
-                .isEqualTo(Cell.CELL_TYPE_BLANK);
+                .isEqualTo(CellType.BLANK);
 
         assertThat(cell.getPoiCell().getStringCellValue())
                 .isEmpty();
@@ -158,7 +157,7 @@ public class SpreadsheetCellTest extends AbstractTest {
         assertThat(cell.getStyle())
                 .isNull();
 
-        SpreadsheetCellStyle cellStyle = new SpreadsheetCellStyle().withAlign(CellStyle.ALIGN_CENTER);
+        SpreadsheetCellStyle cellStyle = new SpreadsheetCellStyle().withHorizontalAlign(HorizontalAlignment.CENTER);
         cell.setStyle(cellStyle);
 
         assertThat(cell.getStyle())
@@ -171,12 +170,12 @@ public class SpreadsheetCellTest extends AbstractTest {
     @Test
     public void applyStyle_MergesAStyleOntoACell() {
         SpreadsheetCellStyle originalStyle = new SpreadsheetCellStyle()
-                .withAlign(CellStyle.ALIGN_CENTER)
+                .withHorizontalAlign(HorizontalAlignment.CENTER)
                 .withBold(true)
-                .withTopBorder(CellStyle.BORDER_MEDIUM)
-                .withLeftBorder(CellStyle.BORDER_MEDIUM)
-                .withBottomBorder(CellStyle.BORDER_MEDIUM)
-                .withRightBorder(CellStyle.BORDER_MEDIUM);
+                .withTopBorder(BorderStyle.MEDIUM)
+                .withLeftBorder(BorderStyle.MEDIUM)
+                .withBottomBorder(BorderStyle.MEDIUM)
+                .withRightBorder(BorderStyle.MEDIUM);
 
 
         SpreadsheetCell cell = getCell();
@@ -192,23 +191,23 @@ public class SpreadsheetCellTest extends AbstractTest {
         cell.applyStyle(styleToApply);
 
         SpreadsheetCellStyle currentStyle = cell.getStyle();
-        assertThat(currentStyle.getAlign())
-                .isEqualTo(CellStyle.ALIGN_CENTER);
+        assertThat(currentStyle.getHorizontalAlign())
+                .isEqualTo(HorizontalAlignment.CENTER);
 
         assertThat(currentStyle.getBold())
                 .isTrue();
 
         assertThat(currentStyle.getTopBorder())
-                .isEqualTo(CellStyle.BORDER_MEDIUM);
+                .isEqualTo(BorderStyle.MEDIUM);
 
         assertThat(currentStyle.getLeftBorder())
-                .isEqualTo(CellStyle.BORDER_MEDIUM);
+                .isEqualTo(BorderStyle.MEDIUM);
 
         assertThat(currentStyle.getBottomBorder())
-                .isEqualTo(CellStyle.BORDER_MEDIUM);
+                .isEqualTo(BorderStyle.MEDIUM);
 
         assertThat(currentStyle.getRightBorder())
-                .isEqualTo(CellStyle.BORDER_MEDIUM);
+                .isEqualTo(BorderStyle.MEDIUM);
 
         assertThat(currentStyle.getTopBorderColor())
                 .isEqualTo(Color.RED);

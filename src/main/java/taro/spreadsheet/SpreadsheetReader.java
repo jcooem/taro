@@ -1,10 +1,7 @@
 package taro.spreadsheet;
 
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
@@ -37,6 +34,8 @@ public class SpreadsheetReader {
      * i.e. B7 (which returns 1) or AR1677 (which returns 43).
      *
      * Throws an IllegalArgumentException if the cellId is malformed
+     * @param cellId
+     * @return
      */
     public static int getColumnIndex(String cellId) {
         return new CellReference(cellId).getCol();
@@ -48,11 +47,18 @@ public class SpreadsheetReader {
      * i.e. B7 (which returns 6) or BR1677 (which returns 1676)
      *
      * Throws an IllegalArgumentException if the cellId is malformed
+     * @param cellId
+     * @return
      */
     public static int getRowIndex(String cellId) {
         return new CellReference(cellId).getRow();
     }
 
+    /**
+     * @param col
+     * @param row
+     * @return
+     */
     public static String getCellAddress(int col, int row) {
         return CellReference.convertNumToColString(col) + (row+1);
     }
@@ -61,19 +67,32 @@ public class SpreadsheetReader {
     private XSSFSheet sheet;
     private DataFormatter df = new DataFormatter();
 
+    /**
+     * @param sheet
+     */
     public SpreadsheetReader(XSSFSheet sheet) {
         this.sheet = sheet;
     }
 
 
+    /**
+     * @return
+     */
     public Sheet getPoiSheet() {
         return sheet;
     }
 
+    /**
+     * @return
+     */
     public int getNumRows() {
         return sheet.getLastRowNum()+1;
     }
 
+    /**
+     * @param rowNum
+     * @return
+     */
     public int getNumCols(int rowNum) {
         return sheet.getRow(rowNum).getLastCellNum()+1;
     }
@@ -82,6 +101,8 @@ public class SpreadsheetReader {
     /**
      * Attempts to convert all values to a string. Returns the trimmed content of the cell, or an empty String
      * if the cell doesn't exist or is empty.
+     * @param cellId
+     * @return
      */
     public String getValue(String cellId) {
         Cell cell = getCell(cellId);
@@ -91,6 +112,9 @@ public class SpreadsheetReader {
     /**
      * Attempts to convert all values to a string. Returns the trimmed content of the cell, or an empty String
      * if the cell doesn't exist or is empty.
+     * @param colIndex
+     * @param rowIndex
+     * @return
      */
     public String getValue(int colIndex, int rowIndex) {
         Cell cell = getCell(colIndex, rowIndex);
@@ -100,6 +124,8 @@ public class SpreadsheetReader {
     /**
      * Attempts to convert all values to a string. Returns the trimmed content of the cell, or an empty String
      * if the cell doesn't exist or is empty.
+     * @param cell
+     * @return
      */
     public String getValue(Cell cell) {
         return trim(df.formatCellValue(cell));
@@ -108,6 +134,8 @@ public class SpreadsheetReader {
     /**
      * Returns the trimmed content of the cell as a String, or an empty String
      * if the cell doesn't exist or is empty.
+     * @param cellId
+     * @return
      */
     public String getStringValue(String cellId) {
         Cell cell = getCell(cellId);
@@ -117,6 +145,9 @@ public class SpreadsheetReader {
     /**
      * Returns the trimmed content of the cell as a String, or an empty String
      * if the cell doesn't exist or is empty.
+     * @param columnIndex
+     * @param rowIndex
+     * @return
      */
     public String getStringValue(int columnIndex, int rowIndex) {
         Cell cell = getCell(columnIndex, rowIndex);
@@ -126,6 +157,8 @@ public class SpreadsheetReader {
     /**
      * Returns the trimmed content of the cell as a String, or an empty String
      * if the cell doesn't exist or is empty.
+     * @param cell
+     * @return
      */
     public String getStringValue(Cell cell) {
         if (cell == null) {
@@ -141,6 +174,8 @@ public class SpreadsheetReader {
 
     /**
      * Returns the numeric content of the cell, or 0 if the cell doesn't exist or is empty.
+     * @param cellId
+     * @return
      */
     public Double getNumericValue(String cellId) {
         Cell cell = getCell(cellId);
@@ -149,12 +184,19 @@ public class SpreadsheetReader {
 
     /**
      * Returns the numeric content of the cell, or 0 if the cell doesn't exist or is empty.
+     * @param columnIndex
+     * @param rowIndex
+     * @return
      */
     public Double getNumericValue(int columnIndex, int rowIndex) {
         Cell cell = getCell(columnIndex, rowIndex);
         return getNumericValue(cell);
     }
 
+    /**
+     * @param cell
+     * @return
+     */
     public Double getNumericValue(Cell cell) {
         if (cell == null) {
             return 0d;
@@ -165,17 +207,28 @@ public class SpreadsheetReader {
 
     /**
      * Returns the Date content of the cell, or null if the cell doesn't exist or is empty.
+     * @param columnIndex
+     * @param rowIndex
+     * @return
      */
     public Date getDateValue(int columnIndex, int rowIndex) {
         Cell cell = getCell(columnIndex, rowIndex);
         return getDateValue(cell);
     }
 
+    /**
+     * @param cellId
+     * @return
+     */
     public Date getDateValue(String cellId) {
         Cell cell = getCell(cellId);
         return getDateValue(cell);
     }
 
+    /**
+     * @param cell
+     * @return
+     */
     public Date getDateValue(Cell cell) {
         if (cell == null) {
             return null;
@@ -184,6 +237,10 @@ public class SpreadsheetReader {
         }
     }
 
+    /**
+     * @param cellId
+     * @return
+     */
     public Cell getCell(String cellId) {
         int columnIndex = getColumnIndex(cellId);
         int rowIndex = getRowIndex(cellId);
@@ -191,6 +248,11 @@ public class SpreadsheetReader {
         return getCell(columnIndex, rowIndex);
     }
 
+    /**
+     * @param columnIndex
+     * @param rowIndex
+     * @return
+     */
     public Cell getCell(int columnIndex, int rowIndex) {
         Row row = sheet.getRow(rowIndex);
         if (row == null) {
@@ -200,19 +262,38 @@ public class SpreadsheetReader {
         }
     }
 
-    public int getCellType(int col, int row) {
+    /**
+     * @param col
+     * @param row
+     * @return
+     */
+    public CellType getCellType(int col, int row) {
         Cell cell = getCell(col, row);
-        return cell != null ? cell.getCellType() : Cell.CELL_TYPE_BLANK;
+        return cell != null ? cell.getCellType() : CellType.BLANK;
     }
 
+    /**
+     * @param col
+     * @param row
+     * @return
+     */
     public boolean isString(int col, int row) {
-        return getCellType(col, row) == Cell.CELL_TYPE_STRING;
+        return getCellType(col, row) == CellType.STRING;
     }
 
+    /**
+     * @param col
+     * @param row
+     * @return
+     */
     public boolean isNumeric(int col, int row) {
-        return getCellType(col, row) == Cell.CELL_TYPE_NUMERIC;
+        return getCellType(col, row) == CellType.NUMERIC;
     }
 
+    /**
+     * @param startingCell
+     * @return
+     */
     public List<String> readDownUntilBlank(String startingCell) {
         List<String> values = newArrayList();
         int rowIndex = getRowIndex(startingCell);
@@ -226,6 +307,11 @@ public class SpreadsheetReader {
         return values;
     }
 
+    /**
+     * @param startingCell
+     * @param num
+     * @return
+     */
     public String[] readDown(String startingCell, int num) {
         String[] values = new String[num];
         int rowIndex = getRowIndex(startingCell);
@@ -236,6 +322,11 @@ public class SpreadsheetReader {
         return values;
     }
 
+    /**
+     * @param startingCell
+     * @param num
+     * @return
+     */
     public double[] readDownNumeric(String startingCell, int num) {
         double[] values = new double[num];
         int rowIndex = getRowIndex(startingCell);
@@ -246,6 +337,10 @@ public class SpreadsheetReader {
         return values;
     }
 
+    /**
+     * @param startingCell
+     * @return
+     */
     public List<String> readAcrossUntilBlank(String startingCell) {
         List<String> values = newArrayList();
         int rowIndex = getRowIndex(startingCell);
@@ -259,6 +354,11 @@ public class SpreadsheetReader {
         return values;
     }
 
+    /**
+     * @param startingCell
+     * @param num
+     * @return
+     */
     public String[] readAcross(String startingCell, int num) {
         String[] values = new String[num];
         int rowIndex = getRowIndex(startingCell);
@@ -269,6 +369,11 @@ public class SpreadsheetReader {
         return values;
     }
 
+    /**
+     * @param startingCell
+     * @param num
+     * @return
+     */
     public double[] readAcrossNumeric(String startingCell, int num) {
         double[] values = new double[num];
         int rowIndex = getRowIndex(startingCell);
@@ -279,6 +384,9 @@ public class SpreadsheetReader {
         return values;
     }
 
+    /**
+     * @return
+     */
     public String[][] readSheet() {
         List<List<String>> contents = newArrayList();
         int maxRowNum = sheet.getLastRowNum();
